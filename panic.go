@@ -28,7 +28,7 @@ func RedirectPanic() error {
 		fmt.Fprintf(os.Stderr, "failed to read /log[%s]", err)
 	}
 	for _, v := range des {
-		if strings.HasPrefix(v.Name(), config.SrvName()) && v.Name() != path {
+		if strings.HasPrefix(v.Name(), config.SrvName()) && !strings.HasSuffix(path, v.Name()) {
 			vinfo, err := v.Info()
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "failed to get %s info[%s]", v.Name(), err)
