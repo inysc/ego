@@ -55,7 +55,7 @@ func HTTPRequest[T any](req *http.Request, respBody *T) error {
 	return err
 }
 
-func Start(srv http.Server, logs logger) {
+func Start(srv *http.Server, logs logger) {
 	go func() {
 		err := srv.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
