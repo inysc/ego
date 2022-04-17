@@ -28,9 +28,9 @@ func GinLogger(log logger) gin.HandlerFunc {
 		c.Next()
 
 		cost := time.Since(start)
-		log.Infof("%s, status[%d], method[%s], path[%s],"+
-			" query[%s], ip[%s], userAgent[%s], errors[%s], cost[%s]",
-			c.Writer.Status(), c.Request.Method, path, query,
+		log.Infof("%s, status[%d], method[%s], query[%s],"+
+			" ip[%s], userAgent[%s], errors[%s], cost[%s]",
+			path, c.Writer.Status(), c.Request.Method, query,
 			c.ClientIP(), c.Request.UserAgent(),
 			c.Errors.ByType(gin.ErrorTypePrivate).String(), cost)
 	}
