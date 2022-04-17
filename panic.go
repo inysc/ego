@@ -36,7 +36,7 @@ func RedirectPanic() error {
 			}
 			if vinfo.Size() == 0 {
 				os.Remove("/log/" + v.Name())
-				fmt.Printf("remove /log/%s[%+v]", v.Name(), vinfo)
+				fmt.Printf("remove /log/%s[%+v]\n", v.Name(), vinfo)
 			}
 		}
 	}
