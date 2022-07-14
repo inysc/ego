@@ -1,4 +1,4 @@
-package redis
+package clientocol
 
 import "github.com/go-redis/redis/v9"
 

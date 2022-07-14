@@ -1,4 +1,4 @@
-package db
+package clientocol
 
 import (
 	"database/sql"

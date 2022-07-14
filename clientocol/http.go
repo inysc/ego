@@ -1,4 +1,4 @@
-package client
+package clientocol
 
 import (
 	"context"
@@ -50,9 +50,10 @@ func HTTPRequest[T any](req *http.Request, respBody *T) error {
 		}
 
 		err = json.Unmarshal(bs, respBody)
+		return err
 	}
 
-	return err
+	return nil
 }
 
 func Start(srv *http.Server, logs logger) {
