@@ -9,64 +9,65 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/inysc/routtp"
 )
 
 const (
-	AuthUser  = "Utluser"
-	AuthPrior = "Utlprior"
-	AuthCity  = "Utlcity"
-	AuthIP    = "Utlip"
+	HeaderEgoUser  = "X-Ego-User"
+	HeaderEgoPrior = "X-Ego-Prior"
+	HeaderEgoCity  = "X-Ego-City"
+	HeaderEgoIp    = "X-Ego-Ip"
 )
 
-// GinLogger 接收 gin 框架默认的日志
-func GinLogger(log logger) gin.HandlerFunc {
-	return func(c *gin.Context) {
+// Logger 接收 routtp 框架默认的日志
+func Logger(log logger) routtp.HandlerFunc {
+	return func(ctx *routtp.Context) {
 		start := time.Now()
-		path := c.Request.URL.Path
-		query := c.Request.URL.RawQuery
-		c.Next()
-
+		ctx.Next()
 		cost := time.Since(start)
-		log.Infof("%s, status[%d], method[%s], query[%s],"+
-			" ip[%s], userAgent[%s], errors[%s], cost[%s]",
-			path, c.Writer.Status(), c.Request.Method, query,
-			c.ClientIP(), c.Request.UserAgent(),
-			c.Errors.ByType(gin.ErrorTypePrivate).String(), cost)
+
+		meth := ctx.Request.Method
+		path := ctx.Request.URL.Path
+		ua := ctx.Request.UserAgent()
+		query := ctx.Request.URL.RawQuery
+		ip := ctx.Request.Header.Get(HeaderEgoIp)
+		log.Infof(
+			"%s method[%s] query[%s] ip[%s] userAgent[%s] cost[%s]",
+			path, meth, query, ip, ua, cost,
+		)
 	}
 }
 
-// GinRecovery recover 掉项目可能出现的 panic
-func GinRecovery(log logger) gin.HandlerFunc {
-	return func(c *gin.Context) {
+// Recovery recover 掉项目可能出现的 panic
+func Recovery(log logger) routtp.HandlerFunc {
+	return func(ctx *routtp.Context) {
 		defer func() {
 			if err := recover(); err != nil {
-				// Check for a broken connection, as it is not really a
-				// condition that warrants a panic stack trace.
 				var brokenPipe bool
 				if ne, ok := err.(*net.OpError); ok {
 					if se, ok := ne.Err.(*os.SyscallError); ok {
-						if strings.Contains(strings.ToLower(se.Error()), "broken pipe") || strings.Contains(strings.ToLower(se.Error()), "connection reset by peer") {
+						if strings.Contains(strings.ToLower(se.Error()), "broken pipe") ||
+							strings.Contains(strings.ToLower(se.Error()), "connection reset by peer") {
 							brokenPipe = true
 						}
 					}
 				}
 
-				httpRequest, _ := httputil.DumpRequest(c.Request, false)
+				httpRequest, _ := httputil.DumpRequest(ctx.Request, false)
 				if brokenPipe {
-					log.Errorf("path[%s], error[%s], request[%s]",
-						c.Request.URL.Path, err, httpRequest)
-					// If the connection is dead, we can't write a status to it.
-					c.Error(err.(error)) // nolint: errcheck
-					c.Abort()
+					path := ctx.Request.URL.Path
+					log.Errorf("path[%s] error[%s] request[%s]", path, err, httpRequest)
+
+					ctx.STRING(http.StatusInternalServerError, err.(error).Error())
+					ctx.Abort()
 					return
 				}
 
 				log.Errorf("[Recovery from panic], err[%s], request[%s], stack\n%s",
 					err, httpRequest, debug.Stack())
-				c.AbortWithStatus(http.StatusInternalServerError)
+				ctx.Response.WriteHeader(http.StatusInternalServerError)
 			}
 		}()
-		c.Next()
+		ctx.Next()
 	}
 }

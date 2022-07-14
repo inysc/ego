@@ -5,17 +5,20 @@ import (
 	"os"
 )
 
-var srvName string
-
 func InitConf[T any](v *T) error {
-	file, err := os.ReadFile(os.Getenv("CONF"))
+	path := os.Getenv("CONF")
+	if path == "" {
+		path = "./server.conf"
+	}
+	file, err := os.ReadFile(path)
 	if err != nil {
 		return err
 	}
 
-	return json.Unmarshal(file, v)
+	err = json.Unmarshal(file, v)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
-
-func SetSrvName(name string) { srvName = name }
-
-func SrvName() string { return srvName }
