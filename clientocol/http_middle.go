@@ -58,7 +58,12 @@ func Recovery(log logger) routtp.HandlerFunc {
 					path := ctx.Request.URL.Path
 					log.Errorf("path[%s] error[%s] request[%s]", path, err, httpRequest)
 
-					ctx.STRING(http.StatusInternalServerError, err.(error).Error())
+					ctx.Exception(&exception{
+						code:   400,
+						status: 400,
+						msg:    err.(error).Error(),
+						data:   "",
+					})
 					ctx.Abort()
 					return
 				}
@@ -70,4 +75,27 @@ func Recovery(log logger) routtp.HandlerFunc {
 		}()
 		ctx.Next()
 	}
+}
+
+type exception struct {
+	code   int
+	status int
+	msg    string
+	data   string
+}
+
+func (ep *exception) Code() int {
+	return ep.code
+}
+
+func (ep *exception) Msg() string {
+	return ep.msg
+}
+
+func (ep *exception) Data() any {
+	return ep.data
+}
+
+func (ep *exception) Status() int {
+	return ep.status
 }
