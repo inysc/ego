@@ -13,10 +13,11 @@ import (
 )
 
 const (
-	HeaderEgoUser  = "X-Ego-User"
-	HeaderEgoPrior = "X-Ego-Prior"
-	HeaderEgoCity  = "X-Ego-City"
-	HeaderEgoIp    = "X-Ego-Ip"
+	HeaderQiuUser  = "X-Qiu-User"
+	HeaderQiuPrior = "X-Qiu-Prior"
+	HeaderQiuCity  = "X-Qiu-City"
+	HeaderQiuIp    = "X-Qiu-Ip"
+	HeaderQiuHost  = "X-Qiu-Host"
 )
 
 // Logger 接收 routtp 框架默认的日志
@@ -30,7 +31,7 @@ func Logger(log logger) routtp.HandlerFunc {
 		path := ctx.Request.URL.Path
 		ua := ctx.Request.UserAgent()
 		query := ctx.Request.URL.RawQuery
-		ip := ctx.Request.Header.Get(HeaderEgoIp)
+		ip := ctx.HeaderGet(HeaderQiuUser)
 		log.Infof(
 			"%s method[%s] query[%s] ip[%s] userAgent[%s] cost[%s]",
 			path, meth, query, ip, ua, cost,
