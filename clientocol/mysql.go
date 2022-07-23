@@ -22,3 +22,21 @@ func InitDB(dsn string) *sqlx.DB {
 func CloseDB() {
 	dbx.Close()
 }
+
+func Transaction(db sqlx.DB, fc func(*sqlx.Tx) error, opts ...*sql.TxOptions) error {
+	tx, err := db.Beginx()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		} else {
+			err = tx.Commit()
+		}
+	}()
+
+	err = fc(tx)
+
+	return nil
+}
