@@ -18,6 +18,9 @@ type SQLSelect interface {
 	Where(map[string]any) SQLSelect
 	Limit(int) SQLSelect
 	Offset(int) SQLSelect
+	Group(string) SQLSelect
+	Having(string) SQLSelect
+	Order(string) SQLSelect
 	Get(dbxGetSelect, any) error
 	Select(dbxGetSelect, any) error
 	Clear()
@@ -29,6 +32,9 @@ type sqlselect struct {
 	join   string
 	on     string
 	where  string
+	group  string
+	having string
+	order  string
 	limit  int
 	offset int
 	args   []any
@@ -85,6 +91,21 @@ func (ss *sqlselect) Offset(o int) SQLSelect {
 	return ss
 }
 
+func (ss *sqlselect) Group(group string) SQLSelect {
+	ss.group = group
+	return ss
+}
+
+func (ss *sqlselect) Having(having string) SQLSelect {
+	ss.having = having
+	return ss
+}
+
+func (ss *sqlselect) Order(order string) SQLSelect {
+	ss.order = order
+	return ss
+}
+
 func (ss *sqlselect) Get(dbx dbxGetSelect, data any) error {
 	defer sqlstatpl.Put(ss)
 	return dbx.Get(data, ss.String(), ss.args...)
@@ -112,6 +133,17 @@ func (ss *sqlselect) String() string {
 		bs.WriteByte(' ')
 		bs.WriteString(ss.where)
 		bs.WriteByte(' ')
+	}
+
+	if ss.group != "" {
+		fmt.Fprintf(bs, " GROUP BY %s ", ss.group)
+		if ss.having != "" {
+			fmt.Fprintf(bs, " HAVING %s ", ss.having)
+		}
+	}
+
+	if ss.order != "" {
+		fmt.Fprintf(bs, " ORDER BY %s ", ss.group)
 	}
 
 	if ss.limit != 0 {
