@@ -7,6 +7,11 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+type EgoSQL interface {
+	SQLNames() []string
+	SQLValues() []any
+}
+
 var dbx *sqlx.DB
 
 func InitDB(dsn string) *sqlx.DB {
@@ -23,7 +28,7 @@ func CloseDB() {
 	dbx.Close()
 }
 
-func Transaction(fc func(*sqlx.Tx) error) error {
+func Transaction(dbx *sqlx.DB, fc func(*sqlx.Tx) error) error {
 	tx, err := dbx.Beginx()
 	if err != nil {
 		return err
