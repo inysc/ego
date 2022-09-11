@@ -3,6 +3,7 @@ module github.com/inysc/ego
 go 1.18
 
 require (
+	github.com/BurntSushi/toml v1.2.0
 	github.com/go-redis/redis/v9 v9.0.0-beta.1
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/inysc/qog v0.0.0-20220612040529-a3243d8c5729
