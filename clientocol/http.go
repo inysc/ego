@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"os/signal"
@@ -44,7 +44,7 @@ func HTTPRequest[T any](req *http.Request, respBody *T) error {
 	}
 	if respBody != nil {
 		defer resp.Body.Close()
-		bs, err := ioutil.ReadAll(resp.Body)
+		bs, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return err
 		}

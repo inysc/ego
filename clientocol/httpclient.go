@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"sync"
 	"time"
@@ -145,7 +144,7 @@ func defaultRespDecode(resp *http.Response, bResp any) error {
 	if bResp == nil {
 		return nil
 	}
-	bs, err := ioutil.ReadAll(resp.Body)
+	bs, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
@@ -154,7 +153,7 @@ func defaultRespDecode(resp *http.Response, bResp any) error {
 
 func defaultErrDecode(resp *http.Response) error {
 	defer resp.Body.Close()
-	bs, err := ioutil.ReadAll(resp.Body)
+	bs, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
