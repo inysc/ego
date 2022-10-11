@@ -2,9 +2,11 @@ package clientocol
 
 import (
 	"database/sql"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"github.com/jmoiron/sqlx/reflectx"
 )
 
 type EgoSQL interface {
@@ -19,7 +21,8 @@ func InitDB(dsn string) *sqlx.DB {
 	if err != nil {
 		panic(err)
 	}
-	dbx = sqlx.NewDb(db, "SQL")
+	dbx = sqlx.NewDb(db, "mysql")
+	dbx.Mapper = reflectx.NewMapperFunc("SQL", strings.ToLower)
 
 	return dbx
 }
