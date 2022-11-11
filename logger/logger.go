@@ -1,6 +1,8 @@
 package logger
 
 import (
+	"io"
+	"os"
 	"sync"
 
 	"github.com/inysc/qog"
@@ -31,14 +33,18 @@ func SetLogger(lg log) {
 func GetLogger(srvname, filename string, lvl qog.Level) log {
 	o.Do(func() {
 		if l == nil {
-			l = qog.New(srvname, lvl, &qog.LoggerFile{
+			w := []io.Writer{&qog.LoggerFile{
 				Filename:   filename,
 				MaxSize:    30,
 				MaxAge:     30,
 				MaxBackups: 7,
 				LocalTime:  true,
 				Compress:   true,
-			})
+			}}
+			if os.Getppid() != 1 {
+				w = append(w, os.Stdout)
+			}
+			l = qog.New(srvname, lvl, w...)
 		}
 	})
 	return l
