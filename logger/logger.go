@@ -28,10 +28,10 @@ func SetLogger(lg log) {
 	l = lg
 }
 
-func GetLogger(srvname, filename string) log {
+func GetLogger(srvname, filename string, lvl qog.Level) log {
 	o.Do(func() {
 		if l == nil {
-			l = qog.New(srvname, qog.DEBUG, &qog.LoggerFile{
+			l = qog.New(srvname, lvl, &qog.LoggerFile{
 				Filename:   filename,
 				MaxSize:    30,
 				MaxAge:     30,
