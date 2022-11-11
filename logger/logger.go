@@ -32,7 +32,7 @@ func SetLogger(lg log) {
 
 func GetLogger(srvname, filename string, lvl qog.Level) log {
 	o.Do(func() {
-		if l == nil {
+		if _, ok := l.(nopLogger); ok {
 			w := []io.Writer{&qog.LoggerFile{
 				Filename:   filename,
 				MaxSize:    30,
