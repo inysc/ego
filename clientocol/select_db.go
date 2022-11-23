@@ -49,7 +49,6 @@ func Select(es EgoSQL) SQLSelect {
 	ret.Clear()
 
 	ret.sel = strings.Join(es.SQLNames(), " , ")
-	ret.args = append(ret.args, es.SQLValues()...)
 
 	return ret
 }
@@ -143,7 +142,7 @@ func (ss *sqlselect) String() string {
 	}
 
 	if ss.order != "" {
-		fmt.Fprintf(bs, " ORDER BY %s ", ss.group)
+		fmt.Fprintf(bs, " ORDER BY %s ", ss.order)
 	}
 
 	if ss.limit != 0 {
