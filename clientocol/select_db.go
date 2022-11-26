@@ -161,6 +161,9 @@ func (ss *sqlselect) Clear() {
 	ss.join = ""
 	ss.on = ""
 	ss.where = ""
+	ss.group = ""
+	ss.having = ""
+	ss.order = ""
 	ss.limit = 0
 	ss.offset = 0
 	ss.args = ss.args[:0]

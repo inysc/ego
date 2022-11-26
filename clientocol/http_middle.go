@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/inysc/facade"
 	"github.com/inysc/routtp"
 )
 
@@ -21,7 +22,7 @@ const (
 )
 
 // Logger 接收 routtp 框架默认的日志
-func Logger(log logger) routtp.HandlerFunc {
+func Logger(log facade.Logger) routtp.HandlerFunc {
 	return func(ctx *routtp.Context) {
 		start := time.Now()
 		ctx.Next()
@@ -40,7 +41,7 @@ func Logger(log logger) routtp.HandlerFunc {
 }
 
 // Recovery recover 掉项目可能出现的 panic
-func Recovery(log logger) routtp.HandlerFunc {
+func Recovery(log facade.Logger) routtp.HandlerFunc {
 	return func(ctx *routtp.Context) {
 		defer func() {
 			if err := recover(); err != nil {

@@ -11,6 +11,8 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/inysc/facade"
 )
 
 var hcpl = sync.Pool{
@@ -56,7 +58,7 @@ func HTTPRequest[T any](req *http.Request, respBody *T) error {
 	return nil
 }
 
-func Start(srv *http.Server, logs logger) {
+func Start(srv *http.Server, logs facade.Logger) {
 	go func() {
 		err := srv.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
