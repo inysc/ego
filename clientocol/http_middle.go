@@ -26,16 +26,11 @@ func Logger() routtp.Handler {
 	return func(ctx *routtp.Context) {
 		start := time.Now()
 		ctx.Next()
-		cost := time.Since(start)
 
-		meth := ctx.Request.Method
-		path := ctx.Request.URL.Path
-		ua := ctx.Request.UserAgent()
-		query := ctx.Request.URL.RawQuery
-		ip := ctx.HeaderGet(HeaderQiuUser)
 		facade.Infof(
 			"%s method[%s] query[%s] ip[%s] userAgent[%s] cost[%s]",
-			path, meth, query, ip, ua, cost,
+			ctx.Request.URL.Path, ctx.Request.Method, ctx.Request.URL.RawQuery,
+			ctx.RealIP(), ctx.Request.UserAgent(), time.Since(start),
 		)
 	}
 }
