@@ -22,7 +22,7 @@ const (
 )
 
 // Logger 接收 routtp 框架默认的日志
-func Logger(log facade.Logger) routtp.Handler {
+func Logger() routtp.Handler {
 	return func(ctx *routtp.Context) {
 		start := time.Now()
 		ctx.Next()
@@ -33,7 +33,7 @@ func Logger(log facade.Logger) routtp.Handler {
 		ua := ctx.Request.UserAgent()
 		query := ctx.Request.URL.RawQuery
 		ip := ctx.HeaderGet(HeaderQiuUser)
-		log.Infof(
+		facade.Infof(
 			"%s method[%s] query[%s] ip[%s] userAgent[%s] cost[%s]",
 			path, meth, query, ip, ua, cost,
 		)

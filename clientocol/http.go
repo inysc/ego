@@ -58,11 +58,11 @@ func HTTPRequest[T any](req *http.Request, respBody *T) error {
 	return nil
 }
 
-func Start(srv *http.Server, logs facade.Logger) {
+func Start(srv *http.Server) {
 	go func() {
 		err := srv.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
-			logs.Errorf("listen: %s\n", err)
+			facade.Errorf("listen: %s\n", err)
 		}
 	}()
 
@@ -70,15 +70,15 @@ func Start(srv *http.Server, logs facade.Logger) {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	logs.Infof("Shutdown Server ...")
+	facade.Infof("Shutdown Server ...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	err := srv.Shutdown(ctx)
 	if err != nil {
-		logs.Errorf("server shutdown[%s]", err)
+		facade.Errorf("server shutdown[%s]", err)
 	}
 
-	logs.Infof("Server exiting")
+	facade.Infof("Server exiting")
 }
