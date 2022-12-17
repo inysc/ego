@@ -22,7 +22,7 @@ const (
 )
 
 // Logger 接收 routtp 框架默认的日志
-func Logger(log facade.Logger) routtp.HandlerFunc {
+func Logger(log facade.Logger) routtp.Handler {
 	return func(ctx *routtp.Context) {
 		start := time.Now()
 		ctx.Next()
@@ -41,7 +41,7 @@ func Logger(log facade.Logger) routtp.HandlerFunc {
 }
 
 // Recovery recover 掉项目可能出现的 panic
-func Recovery(log facade.Logger) routtp.HandlerFunc {
+func Recovery() routtp.Handler {
 	return func(ctx *routtp.Context) {
 		defer func() {
 			if err := recover(); err != nil {
@@ -58,7 +58,7 @@ func Recovery(log facade.Logger) routtp.HandlerFunc {
 				httpRequest, _ := httputil.DumpRequest(ctx.Request, false)
 				if brokenPipe {
 					path := ctx.Request.URL.Path
-					log.Errorf("path[%s] error[%s] request[%s]", path, err, httpRequest)
+					facade.Errorf("path[%s] error[%s] request[%s]", path, err, httpRequest)
 
 					ctx.Exception(&exception{
 						code:   400,
@@ -70,7 +70,7 @@ func Recovery(log facade.Logger) routtp.HandlerFunc {
 					return
 				}
 
-				log.Errorf("[Recovery from panic], err[%s], request[%s], stack\n%s",
+				facade.Errorf("[Recovery from panic], err[%s], request[%s], stack\n%s",
 					err, httpRequest, debug.Stack())
 				ctx.Response.WriteHeader(http.StatusInternalServerError)
 			}
